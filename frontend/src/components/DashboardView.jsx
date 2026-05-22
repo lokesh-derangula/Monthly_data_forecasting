@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, 
   Tooltip, Legend, ResponsiveContainer 
@@ -6,6 +5,35 @@ import {
 import { 
   TrendingUp, BarChart2, Layers, AlertOctagon, Calendar, User, FileText 
 } from 'lucide-react';
+
+// Format date utility
+const formatDate = (dateStr) => {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
+// Custom tooltips for clean dark-crypto style
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div style={{
+        background: '#0C0F16',
+        border: '1px solid #1E2530',
+        padding: '0.75rem 1rem',
+        borderRadius: '4px',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.7)'
+      }}>
+        <p style={{ margin: 0, fontSize: '0.8rem', color: '#8F9CAE', fontWeight: 600 }}>{formatDate(label)}</p>
+        {payload.map((p, idx) => (
+          <p key={idx} style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: p.color === 'var(--secondary)' ? '#FFFFFF' : p.color, fontWeight: 700 }}>
+            <span style={{ textTransform: 'capitalize' }}>{p.name}:</span> {p.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
 
 export default function DashboardView({ reports, historicalData }) {
   if (!reports || reports.length === 0) {
@@ -33,35 +61,6 @@ export default function DashboardView({ reports, historicalData }) {
   const totalMR = reports.reduce((acc, r) => acc + r.regressionTestsManual, 0);
   const passedMR = reports.reduce((acc, r) => acc + r.mrPassed, 0);
   const mrPassRate = totalMR > 0 ? (passedMR / totalMR) * 100 : 0;
-
-  // Format date utility
-  const formatDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  };
-
-  // Custom tooltips for clean dark-crypto style
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div style={{
-          background: '#0C0F16',
-          border: '1px solid #1E2530',
-          padding: '0.75rem 1rem',
-          borderRadius: '4px',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.7)'
-        }}>
-          <p style={{ margin: 0, fontSize: '0.8rem', color: '#8F9CAE', fontWeight: 600 }}>{formatDate(label)}</p>
-          {payload.map((p, idx) => (
-            <p key={idx} style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: p.color === 'var(--secondary)' ? '#FFFFFF' : p.color, fontWeight: 700 }}>
-              <span style={{ textTransform: 'capitalize' }}>{p.name}:</span> {p.value}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="fade-in-up" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

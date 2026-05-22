@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   PlusCircle, Sparkles, AlertCircle, CheckCircle2, RefreshCcw, BookOpen, Cpu, ShieldCheck 
 } from 'lucide-react';
@@ -48,45 +48,35 @@ export default function ReportForm({ projectName, onReportAdded }) {
   const [feedback, setFeedback] = useState({ type: null, message: "" });
   
   // Dynamically computed totals
-  const [totals, setTotals] = useState({
-    storyTests: 0,
-    regressionTestsAutomated: 0,
-    regressionTestsManual: 0,
-    totalTestsByApplication: 0
-  });
+  const storyTests = 
+    Number(form.storyPassed) + 
+    Number(form.storyFailed) + 
+    Number(form.storyUnexecuted) + 
+    Number(form.storyBlocked) + 
+    Number(form.storySkipped);
 
-  // Calculate totals whenever inputs change
-  useEffect(() => {
-    const storyTests = 
-      Number(form.storyPassed) + 
-      Number(form.storyFailed) + 
-      Number(form.storyUnexecuted) + 
-      Number(form.storyBlocked) + 
-      Number(form.storySkipped);
+  const regressionTestsAutomated = 
+    Number(form.arPassed) + 
+    Number(form.arFailed) + 
+    Number(form.arUnexecuted) + 
+    Number(form.arBlocked) + 
+    Number(form.arSkipped);
 
-    const regressionTestsAutomated = 
-      Number(form.arPassed) + 
-      Number(form.arFailed) + 
-      Number(form.arUnexecuted) + 
-      Number(form.arBlocked) + 
-      Number(form.arSkipped);
+  const regressionTestsManual = 
+    Number(form.mrPassed) + 
+    Number(form.mrFailed) + 
+    Number(form.mrUnexecuted) + 
+    Number(form.mrBlocked) + 
+    Number(form.mrSkipped);
 
-    const regressionTestsManual = 
-      Number(form.mrPassed) + 
-      Number(form.mrFailed) + 
-      Number(form.mrUnexecuted) + 
-      Number(form.mrBlocked) + 
-      Number(form.mrSkipped);
+  const totalTestsByApplication = storyTests + regressionTestsAutomated + regressionTestsManual;
 
-    const totalTestsByApplication = storyTests + regressionTestsAutomated + regressionTestsManual;
-
-    setTotals({
-      storyTests,
-      regressionTestsAutomated,
-      regressionTestsManual,
-      totalTestsByApplication
-    });
-  }, [form]);
+  const totals = {
+    storyTests,
+    regressionTestsAutomated,
+    regressionTestsManual,
+    totalTestsByApplication
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;

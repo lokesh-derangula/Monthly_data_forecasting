@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  Layers, Cpu, PlusCircle, RefreshCw, BarChart2, ShieldCheck, Database,
+  Layers, Cpu, BarChart2, ShieldCheck, Database,
   Sparkles, Download, Settings, Plus, X
 } from 'lucide-react';
 import './App.css';
@@ -35,13 +35,15 @@ export default function App() {
       if (data.length > 0 && (selectDefault || !activeProject)) {
         setActiveProject(data[0]);
       }
-    } catch (err) {
+    } catch {
       setError("Failed to connect to FastAPI backend. Ensure uvicorn server is running on localhost:8000.");
     }
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProjects(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 2. Fetch reports & predictions whenever the active project changes
@@ -72,6 +74,7 @@ export default function App() {
 
   useEffect(() => {
     if (activeProject) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchProjectDetails(activeProject);
     }
   }, [activeProject]);

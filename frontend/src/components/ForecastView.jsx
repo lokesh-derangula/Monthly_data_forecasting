@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, 
-  Legend, ResponsiveContainer 
+  ResponsiveContainer 
 } from 'recharts';
 import { 
   TrendingUp, TrendingDown, HelpCircle, Cpu, Info, ShieldAlert,
-  Bug, CheckCircle, Settings, Layers, FileText
+  Bug, CheckCircle, Settings
 } from 'lucide-react';
 
 const CATEGORIZED_METRICS = [
@@ -62,11 +62,6 @@ export default function ForecastView({ forecastData }) {
   const historicalPoints = forecastData.historical_data || [];
   
   if (!activeForecast) return null;
-
-  // KPI Calculations
-  const getLastHistVal = (metricKey) => {
-    return historicalPoints.length > 0 ? (historicalPoints[historicalPoints.length - 1][metricKey] ?? 0) : 0;
-  };
 
   // 1. Forecasted Test Cases (Monthly prediction)
   const monthlyTotalTests = Math.round(forecastData.forecast["totalTestsByApplication"]?.predicted_value ?? 0);

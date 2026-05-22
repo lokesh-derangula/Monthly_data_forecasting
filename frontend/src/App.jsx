@@ -186,20 +186,18 @@ export default function App() {
           {/* Project selector drop list */}
           {projects.length > 0 && (
             <div className="project-select-wrapper">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#0B0E14', border: '1px solid var(--border-color)', borderRadius: '4px', paddingRight: '0.5rem' }}>
-                <Layers size={14} style={{ color: 'var(--primary)', marginLeft: '0.75rem' }} />
-                <select 
-                  className="project-select" 
-                  value={activeProject} 
-                  onChange={(e) => setActiveProject(e.target.value)}
-                  disabled={isLoading || isSeeding}
-                  style={{ border: 'none', minWidth: '130px', paddingLeft: '0.25rem' }}
-                >
-                  {projects.map((name) => (
-                    <option key={name} value={name}>{name}</option>
-                  ))}
-                </select>
-              </div>
+              <Layers size={13} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+              <select 
+                className="project-select" 
+                value={activeProject} 
+                onChange={(e) => setActiveProject(e.target.value)}
+                disabled={isLoading || isSeeding}
+              >
+                {projects.map((name) => (
+                  <option key={name} value={name} style={{ background: '#0C0F16', color: '#FFFFFF' }}>{name}</option>
+                ))}
+              </select>
+              <span className="select-arrow-custom">▾</span>
             </div>
           )}
 

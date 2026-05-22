@@ -524,51 +524,6 @@ export default function ForecastView({ forecastData }) {
               </div>
             )}
           </div>
-
-          {/* Model Performance Comparison Card */}
-          <div className="model-comp-card">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem' }}>
-              <Layers size={16} style={{ color: '#8B5CF6' }} />
-              <div>
-                <h3 className="card-title" style={{ fontSize: '0.95rem', margin: 0 }}>Model Performance Comparison</h3>
-                <p className="card-subtitle" style={{ margin: 0, fontSize: '0.72rem' }}>Tested architectures against historical bug validation datasets</p>
-              </div>
-            </div>
-            <div className="model-comp-list">
-              <div className="model-comp-item selected">
-                <div className="model-comp-left">
-                  <span className="model-comp-bullet"></span>
-                  <span className="model-comp-name">RandomForestRegressor</span>
-                  <span className="model-comp-badge-selected">SELECTED</span>
-                </div>
-                <div className="model-comp-right">
-                  <span className="model-comp-mae">MAE: 1.4</span>
-                  <span className="model-comp-r2">R²: 0.85</span>
-                </div>
-              </div>
-              <div className="model-comp-item">
-                <div className="model-comp-left">
-                  <span className="model-comp-bullet"></span>
-                  <span className="model-comp-name">XGBoost Regressor</span>
-                </div>
-                <div className="model-comp-right">
-                  <span className="model-comp-mae">MAE: 2.1</span>
-                  <span className="model-comp-r2">R²: 0.78</span>
-                </div>
-              </div>
-              <div className="model-comp-item">
-                <div className="model-comp-left">
-                  <span className="model-comp-bullet"></span>
-                  <span className="model-comp-name">Linear Regression</span>
-                </div>
-                <div className="model-comp-right">
-                  <span className="model-comp-mae">MAE: 3.2</span>
-                  <span className="model-comp-r2">R²: 0.62</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
 
       </div>

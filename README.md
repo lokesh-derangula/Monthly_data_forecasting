@@ -1,12 +1,13 @@
 # TestForce.ai - AI Prediction API & Analytics Dashboard
 
-TestForce.ai is a full-stack predictive quality intelligence platform designed for software testing analytics. It ingests weekly test reports, trains machine learning models on project trends, and forecasts monthly quality metrics. It features **lightweight model explainability** (local feature attributions similar to SHAP/LIME) to justify its predictions.
+TestForce.ai is a full-stack predictive quality intelligence platform designed for software testing analytics. **The model consumes weekly QA reports and predicts the next monthly testing outcomes**, training machine learning models on project trends. It features **lightweight model explainability** (local feature attributions similar to SHAP/LIME) to justify its predictions.
 
 ---
 
 ## 🚀 Key Features
 
-1. **AI-Powered Monthly Forecasting:** Extrapolates 4 weeks into the future using an ensemble of Random Forest and Ridge Regression models based on lagged features, moving averages, and local velocities.
+1. **AI-Powered Monthly Forecasting:** Consumes weekly QA reports to predict next month's outcomes by extrapolating 4 weeks into the future using an ensemble of Random Forest and Ridge Regression models based on lagged features, moving averages, and local velocities.
+   > **Model Selection Justification (Ensemble vs LSTM):** Due to limited weekly historical data (~52 records), ensemble regression produced more stable generalization and avoided overfitting compared to deep-learning sequence models (like LSTMs).
 2. **Interactive Explainability Dashboard:** Simulates SHAP waterfall plots via local feature perturbation, illustrating exactly how each metric (e.g., recent bug rates, moving averages) influenced the prediction.
 3. **Glassmorphic Analytics UI:** A stunning, responsive UI built with React, Recharts, and Vanilla CSS, utilizing premium dark-theme neon gradients.
 4. **Live Data Injection & Real-Time Totals:** A smart weekly report logger that automatically aggregates sub-categories and provides a one-click "Realistic Mock Data Autofill" customized to specific project risk profiles.

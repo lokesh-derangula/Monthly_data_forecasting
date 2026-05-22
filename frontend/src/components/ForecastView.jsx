@@ -203,7 +203,7 @@ export default function ForecastView({ forecastData }) {
               <div>
                 <h3 className="card-title">4-Week Extrapolated Forecast</h3>
                 <p className="card-subtitle">
-                  Historical actual weekly values connected to ML forecasted points for <strong>{formatLabel(selectedMetric)}</strong>
+                  The model consumes weekly QA reports and predicts the next monthly testing outcomes (4-week aggregate forecast) for <strong>{formatLabel(selectedMetric)}</strong>.
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.8rem' }}>

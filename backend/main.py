@@ -134,7 +134,7 @@ async def seed_data(background_tasks: BackgroundTasks):
     background_tasks.add_task(reset_db_and_reseed)
     return {"message": "Database reset and seeding process started in background."}
 
-@app.get("/")
+@app.get("/", include_in_schema=False)
 async def root():
     return {"message": "AI Forecasting API Running"}
 

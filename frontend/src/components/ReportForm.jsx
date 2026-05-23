@@ -3,6 +3,8 @@ import {
   PlusCircle, Sparkles, AlertCircle, CheckCircle2, RefreshCcw, BookOpen, Cpu, ShieldCheck 
 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
 const INITIAL_FORM_STATE = {
   authors: "Alex QA, Sarah Dev",
   
@@ -174,7 +176,7 @@ export default function ReportForm({ projectName, onReportAdded }) {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/reports", {
+      const response = await fetch(`${API_BASE}/api/reports`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

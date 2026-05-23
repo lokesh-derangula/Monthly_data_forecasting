@@ -8,6 +8,8 @@ import DashboardView from './components/DashboardView';
 import ForecastView from './components/ForecastView';
 import ReportForm from './components/ReportForm';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
 export default function App() {
   const [projects, setProjects] = useState([]);
   const [activeProject, setActiveProject] = useState("");
@@ -23,12 +25,10 @@ export default function App() {
   const [error, setError] = useState("");
   const [showModelPerfModal, setShowModelPerfModal] = useState(false);
 
-  const backendUrl = "http://127.0.0.1:8000";
-
   // 1. Fetch available projects list on mount
   const fetchProjects = async (selectDefault = false) => {
     try {
-      const res = await fetch(`${backendUrl}/api/projects`);
+      const res = await fetch(`${API_BASE}/api/projects`);
       if (!res.ok) throw new Error("Could not fetch project list.");
       const data = await res.json();
       setProjects(data);
@@ -36,7 +36,7 @@ export default function App() {
         setActiveProject(data[0]);
       }
     } catch {
-      setError("Failed to connect to FastAPI backend. Ensure uvicorn server is running on localhost:8000.");
+      setError("Failed to connect to FastAPI backend. Ensure the backend server is running.");
     }
   };
 
@@ -53,14 +53,14 @@ export default function App() {
     setError("");
     try {
       // Fetch historical logs
-      const reportsRes = await fetch(`${backendUrl}/api/reports/${projName}`);
+      const reportsRes = await fetch(`${API_BASE}/api/reports/${projName}`);
       if (!reportsRes.ok) throw new Error("Failed to load historical test reports.");
       const reportsData = await reportsRes.json();
       setReports(reportsData);
 
       // Trigger AI training and predictions
       setIsTraining(true);
-      const predictRes = await fetch(`${backendUrl}/api/predict/${projName}`, { method: 'POST' });
+      const predictRes = await fetch(`${API_BASE}/api/predict/${projName}`, { method: 'POST' });
       if (!predictRes.ok) throw new Error("AI forecasting calculations failed.");
       const predictData = await predictRes.json();
       setForecastData(predictData);
@@ -85,7 +85,7 @@ export default function App() {
       setIsSeeding(true);
       setError("");
       try {
-        const res = await fetch(`${backendUrl}/api/seed`, { method: "POST" });
+        const res = await fetch(`${API_BASE}/api/seed`, { method: "POST" });
         if (!res.ok) throw new Error("Seed request failed.");
         
         // Wait 3 seconds for background seeding thread to write SQLite rows
@@ -109,7 +109,7 @@ export default function App() {
     setIsTraining(true);
     setError("");
     try {
-      const res = await fetch(`${backendUrl}/api/predict/${activeProject}`, { method: 'POST' });
+      const res = await fetch(`${API_BASE}/api/predict/${activeProject}`, { method: 'POST' });
       if (!res.ok) throw new Error("AI forecasting calculations failed.");
       const data = await res.json();
       setForecastData(data);

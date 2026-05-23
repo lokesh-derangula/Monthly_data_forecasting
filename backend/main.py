@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
@@ -24,10 +25,13 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Enable CORS for frontend development
+# Enable CORS restricted to configured frontend domains
+origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,https://yourfrontend.vercel.app")
+allowed_origins = [origin.strip() for origin in origins_env.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # In production, restrict to frontend domain
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

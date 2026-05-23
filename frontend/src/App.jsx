@@ -8,7 +8,8 @@ import DashboardView from './components/DashboardView';
 import ForecastView from './components/ForecastView';
 import ReportForm from './components/ReportForm';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const rawApiBase = import.meta.env.VITE_API_BASE_URL;
+const API_BASE = rawApiBase && rawApiBase.endsWith('/') ? rawApiBase.slice(0, -1) : rawApiBase;
 
 export default function App() {
   const [projects, setProjects] = useState([]);

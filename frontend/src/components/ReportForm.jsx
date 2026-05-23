@@ -3,7 +3,8 @@ import {
   PlusCircle, Sparkles, AlertCircle, CheckCircle2, RefreshCcw, BookOpen, Cpu, ShieldCheck 
 } from 'lucide-react';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const rawApiBase = import.meta.env.VITE_API_BASE_URL;
+const API_BASE = rawApiBase && rawApiBase.endsWith('/') ? rawApiBase.slice(0, -1) : rawApiBase;
 
 const INITIAL_FORM_STATE = {
   authors: "Alex QA, Sarah Dev",

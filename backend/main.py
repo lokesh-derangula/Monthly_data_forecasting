@@ -26,7 +26,7 @@ app = FastAPI(
 )
 
 # Enable CORS restricted to configured frontend domains
-origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,https://yourfrontend.vercel.app")
+origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,https://monthly-data-forecasting.vercel.app")
 allowed_origins = [origin.strip() for origin in origins_env.split(",") if origin.strip()]
 
 app.add_middleware(
@@ -134,6 +134,14 @@ async def seed_data(background_tasks: BackgroundTasks):
     background_tasks.add_task(reset_db_and_reseed)
     return {"message": "Database reset and seeding process started in background."}
 
+@app.get("/")
+async def root():
+    return {"message": "AI Forecasting API Running"}
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    # Bind to 0.0.0.0 on Render, otherwise 127.0.0.1 locally
+    host = os.getenv("HOST", "0.0.0.0" if os.getenv("RENDER") else "127.0.0.1")
+    # Use Render port (defaults to 10000 on Render if unset), fallback to 8000
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("main:app", host=host, port=port, reload=True)

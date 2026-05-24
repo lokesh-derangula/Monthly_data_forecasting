@@ -211,10 +211,10 @@ export default function App() {
             className="header-btn" 
             onClick={handleExportCSV}
             disabled={!forecastData || isLoading}
-            title="Export predicted test reports as CSV"
+            title="Download predicted test reports as CSV"
           >
             <Download size={14} />
-            Export Forecast Report
+            Download Report
           </button>
 
           <button 

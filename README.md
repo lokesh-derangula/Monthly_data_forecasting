@@ -4,81 +4,110 @@ TestForce.ai is a full-stack predictive quality intelligence platform designed f
 
 ---
 
-## 🚀 Key Features
+## 🏗️ Architecture
 
-1. **AI-Powered Monthly Forecasting:** Consumes weekly QA reports to predict next month's outcomes by extrapolating 4 weeks into the future using an ensemble of Random Forest and Ridge Regression models based on lagged features, moving averages, and local velocities.
-   > **Model Selection Justification (Ensemble vs LSTM):** Due to limited weekly historical data (~52 records), ensemble regression produced more stable generalization and avoided overfitting compared to deep-learning sequence models (like LSTMs).
-2. **Interactive Explainability Dashboard:** Simulates SHAP waterfall plots via local feature perturbation, illustrating exactly how each metric (e.g., recent bug rates, moving averages) influenced the prediction.
-3. **Glassmorphic Analytics UI:** A stunning, responsive UI built with React, Recharts, and Vanilla CSS, utilizing premium dark-theme neon gradients.
-4. **Live Data Injection & Real-Time Totals:** A smart weekly report logger that automatically aggregates sub-categories and provides a one-click "Realistic Mock Data Autofill" customized to specific project risk profiles.
-5. **Comprehensive Integration Testing:** Includes a fully configured `pytest` suite verifying endpoint responses, model integrity, and edge cases.
+The application follows a clean decoupled client-server architecture:
 
----
+```mermaid
+graph TD
+    subgraph Frontend [React Frontend - Vite]
+        UI[Glassmorphic UI / Dashboard]
+        Charts[Recharts Visualizations]
+        UI --> Charts
+    end
 
-## 🛠️ Tech Stack
+    subgraph Backend [FastAPI Backend]
+        API[FastAPI Endpoints]
+        SQL[SQLModel / SQLAlchemy ORM]
+        MLEngine[AI Forecast Engine - Ridge & RandomForest]
+        SHAP[SHAP-like Explainer]
+        
+        API --> SQL
+        API --> MLEngine
+        MLEngine --> SHAP
+    end
 
-*   **Backend:** FastAPI (Async API), SQLModel (ORM integrating SQLAlchemy & Pydantic), SQLite (Local Database).
-*   **Machine Learning:** scikit-learn (RandomForestRegressor, Ridge), Pandas, NumPy.
-*   **Frontend:** React.js, Vite, Recharts (Responsive charts), Lucide-React (Icons), Vanilla CSS.
-*   **Testing:** PyTest, HTTPX.
+    subgraph Storage [Database]
+        DB[(SQLite - forecaster.db)]
+    end
 
----
-
-## 📂 Project Directory Structure
-
-```text
-ai-test-forecaster/
-├── backend/
-│   ├── main.py          # FastAPI server and async endpoints
-│   ├── models.py        # SQLModel schemas and API request validators
-│   ├── database.py      # SQLite database configuration and session manager
-│   ├── forecaster.py    # Feature engineering, ML training, & SHAP-like explanations
-│   ├── seed.py          # Generates 1 year of historical logs for 3 project types
-│   ├── test_api.py      # Automated integration test suite
-│   ├── requirements.txt # Python dependency file
-│   └── forecaster.db    # Auto-generated SQLite database
-└── frontend/
-    ├── index.html       # Entry HTML with SEO meta tags
-    ├── package.json     # Node.js dependencies (React, Recharts, Lucide)
-    └── src/
-        ├── main.jsx     # Vite React mount
-        ├── App.jsx      # Core UI controller & state hub
-        ├── App.css      # Custom dark-theme glassmorphism CSS
-        └── components/
-            ├── DashboardView.jsx  # Historical area/line charts & table
-            ├── ForecastView.jsx   # Predictor dashboard & waterfall attributions
-            └── ReportForm.jsx     # Dynamic form with mock data generator
+    UI <-->|REST API / JSON| API
+    SQL <--> DB
 ```
 
+*   **Frontend**: Built with React (Vite) and styled with custom Glassmorphism (Vanilla CSS). Displays historical metrics and AI predictions.
+*   **Backend**: A FastAPI async server that provides REST endpoints for reports, model predictions, and DB seeding.
+*   **AI Engine**: Employs an ensemble machine learning pipeline (Random Forest + Ridge Regression) trained on weekly QA reports, generating 4-week monthly forecasts with perturbation-based explainability (SHAP-like attribution).
+*   **Database**: Local SQLite database managed via SQLModel ORM.
+
+> [!NOTE]
+> **Model Selection Justification (Ensemble vs LSTM):** Due to limited weekly historical data (~52 records), ensemble regression produced more stable generalization and avoided overfitting compared to deep-learning sequence models (like LSTMs).
+
 ---
 
-## 🏁 Setup & Execution
+## 🚀 Quick Start Guide
 
-### 1. Run Backend Server
-Ensure Python (3.9+) is installed. Open a terminal in the `backend/` folder and execute:
+### Setup Backend:
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Create and activate a Python virtual environment:
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate  # On Linux/macOS: source .venv/bin/activate
+   ```
+3. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Start the FastAPI backend server:
+   ```bash
+   python main.py
+   ```
+   *The backend server runs at `http://127.0.0.1:8000`. Swagger API docs are available at `http://127.0.0.1:8000/docs`.*
+
+### Setup Frontend:
+1. Open a new terminal and navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+   *Open your browser and navigate to `http://localhost:5173` to access the application dashboard.*
+
+---
+
+## 🧪 Verification & Testing
+
+### Backend Unit Tests
+To run the automated tests validating API routing, database transactions, seeding, and forecasting calculations:
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run integration tests to verify compile checks
+cd backend
+.venv\Scripts\activate
 pytest test_api.py
-
-# Start FastAPI server (CORS is configured for localhost)
-python main.py
 ```
-The backend starts at: `http://127.0.0.1:8000`. You can visit `http://127.0.0.1:8000/docs` to interact with the FastAPI Swagger UI.
 
-### 2. Run Frontend Dashboard
-Open a separate terminal in the `frontend/` folder and execute:
+### Frontend Compilation
+Verify that the React production bundle builds without any errors or warnings:
 ```bash
-# Install Node modules
-npm install
-
-# Start Vite React server
-npm run dev
+cd frontend
+npm run build
 ```
-The application will open at: `http://localhost:5173`.
 
 ---
 
+## 🛠️ Tech Stack & Technologies
 
+*   **Programming Languages:** Python, JavaScript
+*   **Backend Framework:** FastAPI, Uvicorn, SQLModel (SQLAlchemy & Pydantic)
+*   **Machine Learning:** Pandas, NumPy, scikit-learn, Perturbation Explainability (SHAP-like)
+*   **Database:** SQLite (Local database file `forecaster.db`)
+*   **Frontend:** React (Vite), Recharts, Lucide Icons, Vanilla CSS (Glassmorphism design system)
+*   **Testing:** PyTest, HTTPX

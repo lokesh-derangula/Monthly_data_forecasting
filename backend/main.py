@@ -9,7 +9,12 @@ from contextlib import asynccontextmanager
 from database import engine, create_db_and_tables, get_session
 from models import TestReport, TestReportCreate, PredictionResponse
 from seed import reset_db_and_reseed, generate_historical_data
-from forecaster import generate_forecast_response
+from forecaster import (
+    generate_forecast_response,
+    get_cached_forecast,
+    set_cached_forecast,
+    clear_forecast_cache
+)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -101,6 +106,7 @@ async def create_report(report_data: TestReportCreate, session: Session = Depend
     session.add(report)
     session.commit()
     session.refresh(report)
+    clear_forecast_cache()
     return report
 
 @app.post("/api/predict/{project_name}")
@@ -121,8 +127,14 @@ async def predict_project_forecast(project_name: str, session: Session = Depends
             detail="Insufficient data. Need at least 4 weekly reports to make forecasting computations."
         )
         
+    # Check if we have a cached forecast prediction
+    cached_payload = get_cached_forecast(project_name, reports)
+    if cached_payload is not None:
+        return cached_payload
+        
     try:
         forecast_payload = generate_forecast_response(reports)
+        set_cached_forecast(project_name, reports, forecast_payload)
         return forecast_payload
     except Exception as e:
         import traceback
@@ -132,6 +144,7 @@ async def predict_project_forecast(project_name: str, session: Session = Depends
 @app.post("/api/seed")
 async def seed_data(background_tasks: BackgroundTasks):
     """Trigger background job to reset the database and seed it with fresh mockup data."""
+    clear_forecast_cache()
     background_tasks.add_task(reset_db_and_reseed)
     return {"message": "Database reset and seeding process started in background."}
 

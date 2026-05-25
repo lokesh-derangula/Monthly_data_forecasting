@@ -25,19 +25,41 @@ export default function App() {
   const [isSeeding, setIsSeeding] = useState(false);
   const [error, setError] = useState("");
   const [showModelPerfModal, setShowModelPerfModal] = useState(false);
+  const [isWakingServer, setIsWakingServer] = useState(false);
+  const [wakeProgress, setWakeProgress] = useState(0);
 
-  // 1. Fetch available projects list on mount
-  const fetchProjects = async (selectDefault = false) => {
+  // 1. Fetch available projects list on mount with retry handling for server cold start
+  const fetchProjects = async (selectDefault = false, attempt = 1) => {
+    setError("");
+    if (attempt === 1) {
+      setIsLoading(true);
+    }
+    
     try {
       const res = await fetch(`${API_BASE}/api/projects`);
       if (!res.ok) throw new Error("Could not fetch project list.");
       const data = await res.json();
+      
       setProjects(data);
+      setIsWakingServer(false);
+      setIsLoading(false);
+      
       if (data.length > 0 && (selectDefault || !activeProject)) {
         setActiveProject(data[0]);
       }
     } catch {
-      setError("Failed to connect to FastAPI backend. Ensure the backend server is running.");
+      const maxAttempts = 15; // 15 attempts * 4s = 60s total wait time
+      if (attempt < maxAttempts) {
+        setIsWakingServer(true);
+        setWakeProgress(Math.min(Math.round((attempt / maxAttempts) * 100), 95));
+        setTimeout(() => {
+          fetchProjects(selectDefault, attempt + 1);
+        }, 4000);
+      } else {
+        setIsWakingServer(false);
+        setIsLoading(false);
+        setError("Failed to connect to FastAPI backend. Ensure the backend server is running.");
+      }
     }
   };
 
@@ -298,8 +320,28 @@ export default function App() {
         </div>
       )}
 
+      {/* Server Waking Indicator Overlay */}
+      {isWakingServer && !isSeeding && (
+        <div className="glass-card loader-container fade-in-up" style={{
+          background: 'rgba(139, 92, 246, 0.05)',
+          border: '1px solid rgba(139, 92, 246, 0.2)',
+          boxShadow: '0 8px 32px rgba(139, 92, 246, 0.15)',
+        }}>
+          <div className="loading-spinner" style={{ borderColor: 'rgba(139, 92, 246, 0.2)', borderTopColor: 'var(--primary)' }}></div>
+          <p className="loader-text" style={{ color: '#E2E8F0', fontWeight: 600 }}>
+            Waking up prediction engine on Render...
+          </p>
+          <div style={{ width: '250px', background: 'rgba(255, 255, 255, 0.05)', height: '6px', borderRadius: '3px', overflow: 'hidden', marginTop: '0.75rem' }}>
+            <div style={{ width: `${wakeProgress}%`, background: 'linear-gradient(90deg, var(--primary), var(--secondary))', height: '100%', transition: 'width 4s linear' }}></div>
+          </div>
+          <span style={{ fontSize: '0.75rem', color: 'var(--neutral-gray)', marginTop: '0.5rem' }}>
+            This can take up to 60 seconds on cold start. Progress: {wakeProgress}%
+          </span>
+        </div>
+      )}
+
       {/* Global Error Banner */}
-      {error && !isSeeding && (
+      {error && !isSeeding && !isWakingServer && (
         <div className="glass-card" style={{ 
           background: 'rgba(239, 68, 68, 0.08)', 
           border: '1px solid var(--error)',
@@ -333,7 +375,7 @@ export default function App() {
       )}
 
       {/* Main View Container */}
-      {!isSeeding && !error && (
+      {!isSeeding && !error && !isWakingServer && (
         <>
           {isLoading && (
             <div className="glass-card loader-container fade-in-up">

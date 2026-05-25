@@ -6,13 +6,38 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import Ridge
 from models import TestReport
 
-# The list of numerical metrics we want to predict
+# The list of numerical metrics we want to predict (optimized to only include UI visible metrics)
 METRICS_TO_FORECAST = [
-    "storyTests", "regressionTestsAutomated", "regressionTestsManual", "totalTestsByApplication",
-    "storyPassed", "storyFailed", "storyUnexecuted", "storyBlocked", "storySkipped", "storyCritical", "storyNew", "storyUnused", "storyBugs",
-    "arPassed", "arFailed", "arUnexecuted", "arBlocked", "arSkipped", "arCritical", "arNew", "arUnused", "arBugs",
-    "mrPassed", "mrFailed", "mrUnexecuted", "mrBlocked", "mrSkipped", "mrCritical", "mrNew", "mrUnused", "mrBugs"
+    "totalTestsByApplication", "storyTests", "regressionTestsAutomated", "regressionTestsManual",
+    "storyPassed", "storyFailed", "storyBugs",
+    "arPassed", "arFailed", "arBugs",
+    "mrPassed", "mrFailed", "mrBugs"
 ]
+
+# In-memory prediction cache to support instant loading
+_forecast_cache = {}
+
+def get_forecast_cache_key(project_name: str, reports: list) -> tuple:
+    if not reports:
+        return (project_name, 0, None)
+    last_report = reports[-1]
+    return (
+        project_name,
+        len(reports),
+        getattr(last_report, "id", None),
+        last_report.createdAt.timestamp() if getattr(last_report, "createdAt", None) else None
+    )
+
+def get_cached_forecast(project_name: str, reports: list) -> dict | None:
+    key = get_forecast_cache_key(project_name, reports)
+    return _forecast_cache.get(key)
+
+def set_cached_forecast(project_name: str, reports: list, payload: dict):
+    key = get_forecast_cache_key(project_name, reports)
+    _forecast_cache[key] = payload
+
+def clear_forecast_cache():
+    _forecast_cache.clear()
 
 def get_volume_metric_for(metric_name: str) -> str:
     """Helper to return the base test volume metric corresponding to a result metric."""
@@ -145,7 +170,8 @@ def train_and_forecast_metric(
         
     # 3. Train multi-output model (Ensemble of Ridge and RandomForest for robustness)
     # Ridge is great for stable trends; RandomForest captures non-linear relationships.
-    model_rf = RandomForestRegressor(n_estimators=40, random_state=42, max_depth=5)
+    # Set n_estimators=20 for faster fitting on small datasets without accuracy degradation.
+    model_rf = RandomForestRegressor(n_estimators=20, random_state=42, max_depth=5)
     model_ridge = Ridge(alpha=1.0)
     
     model_rf.fit(X, y)

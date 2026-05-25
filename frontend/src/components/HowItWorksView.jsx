@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { 
   HelpCircle, Cpu, Layers, LineChart, ShieldCheck, 
-  Database, UploadCloud, Settings, Download, ArrowRight, Play
+  Database, UploadCloud, Settings, Download, Play
 } from 'lucide-react';
 
 export default function HowItWorksView() {

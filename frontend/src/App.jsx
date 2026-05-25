@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { 
   Layers, Cpu, BarChart2, ShieldCheck, Database,
-  Sparkles, Download, Settings, Plus, X, FileText, HelpCircle
+  Sparkles, Download, Settings, Plus, FileText, HelpCircle
 } from 'lucide-react';
 import './App.css';
 import DashboardView from './components/DashboardView';
@@ -26,7 +26,7 @@ export default function App() {
   const [isTraining, setIsTraining] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
   const [error, setError] = useState("");
-  const [showModelPerfModal, setShowModelPerfModal] = useState(false);
+
   const [isWakingServer, setIsWakingServer] = useState(false);
   const [wakeProgress, setWakeProgress] = useState(0);
 
@@ -66,7 +66,6 @@ export default function App() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProjects(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -402,6 +401,7 @@ export default function App() {
               )}
               {activeTab === "addReport" && (
                 <ReportForm 
+                  key={activeProject}
                   projectName={activeProject}
                   onReportAdded={handleReportAdded}
                   onCancel={() => setActiveTab("dashboard")}

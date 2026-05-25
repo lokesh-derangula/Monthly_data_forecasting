@@ -3,7 +3,7 @@ import {
   Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 import { 
-  TrendingUp, BarChart2, Layers, AlertOctagon, Calendar, User, FileText 
+  TrendingUp, BarChart2, Layers, AlertOctagon 
 } from 'lucide-react';
 
 // Format date utility

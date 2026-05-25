@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { 
   UploadCloud, FileText, AlertCircle, CheckCircle2, 
   RefreshCcw, Sparkles, X, PlusCircle, Layers
@@ -78,27 +78,7 @@ export default function ReportForm({ projectName, onReportAdded, onCancel }) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (projectName) {
-      const defaults = PROJECT_DEFAULTS[projectName] || PROJECT_DEFAULTS.fallback;
-      setForm({
-        authors: defaults.authors,
-        storyTests: defaults.storyTests,
-        regressionTestsAutomated: defaults.regressionTestsAutomated,
-        regressionTestsManual: defaults.regressionTestsManual,
-        storyPassed: defaults.storyPassed,
-        storyFailed: defaults.storyFailed,
-        storyBugs: defaults.storyBugs,
-        arPassed: defaults.arPassed,
-        arFailed: defaults.arFailed,
-        arBugs: defaults.arBugs,
-        mrPassed: defaults.mrPassed,
-        mrFailed: defaults.mrFailed,
-        mrBugs: defaults.mrBugs,
-        createdAt: new Date().toISOString().substring(0, 10)
-      });
-    }
-  }, [projectName]);
+
   const [feedback, setFeedback] = useState({ type: null, message: "" });
   const fileInputRef = useRef(null);
 

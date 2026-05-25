@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { 
   Layers, Cpu, BarChart2, ShieldCheck, Database,
-  Sparkles, Download, Settings, Plus, X
+  Sparkles, Download, Settings, Plus, X, FileText, HelpCircle
 } from 'lucide-react';
 import './App.css';
 import DashboardView from './components/DashboardView';
 import ForecastView from './components/ForecastView';
 import ReportForm from './components/ReportForm';
+import WeeklyReportsView from './components/WeeklyReportsView';
+import HowItWorksView from './components/HowItWorksView';
 
 const rawApiBase = import.meta.env.VITE_API_BASE_URL;
 const API_BASE = rawApiBase && rawApiBase.endsWith('/') ? rawApiBase.slice(0, -1) : rawApiBase;
@@ -201,7 +203,6 @@ export default function App() {
           <div className="logo-text">
             <h1 style={{ display: 'flex', alignItems: 'center' }}>
               TestForce.ai
-              <span className="predictive-badge">Predictive Engine</span>
             </h1>
             <span style={{ color: 'var(--neutral-gray)', letterSpacing: '0.05em' }}>Software Quality Metrics & QA Forecasting</span>
           </div>
@@ -261,32 +262,7 @@ export default function App() {
             Retrain Model
           </button>
 
-          <button 
-            type="button" 
-            className="header-btn-primary" 
-            onClick={() => setActiveTab("addReport")}
-            title="Log new weekly QA report metrics"
-          >
-            <Plus size={14} />
-            Add Weekly Data
-          </button>
 
-          {/* Model Performance Button */}
-          <button 
-            type="button" 
-            className="header-btn model-perf-btn" 
-            onClick={() => setShowModelPerfModal(true)}
-            title="View AI Forecasting model architecture and error performance metrics"
-            style={{
-              borderColor: 'rgba(139, 92, 246, 0.4)',
-              background: 'rgba(139, 92, 246, 0.06)',
-              color: '#A78BFA',
-              boxShadow: '0 0 8px rgba(139, 92, 246, 0.15)'
-            }}
-          >
-            <Cpu size={14} style={{ color: '#A78BFA' }} />
-            Model Performance
-          </button>
 
         </div>
       </header>
@@ -306,6 +282,26 @@ export default function App() {
             disabled={reports.length === 0}
           >
             <Cpu size={16} /> AI Forecast
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'reports' ? 'active' : ''}`}
+            onClick={() => setActiveTab("reports")}
+            disabled={reports.length === 0}
+          >
+            <FileText size={16} /> Weekly Reports
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'addReport' ? 'active' : ''}`}
+            onClick={() => setActiveTab("addReport")}
+            disabled={!activeProject}
+          >
+            <Plus size={16} /> Add Weekly Data
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'howItWorks' ? 'active' : ''}`}
+            onClick={() => setActiveTab("howItWorks")}
+          >
+            <HelpCircle size={16} /> How It Works
           </button>
         </nav>
       </div>
@@ -399,74 +395,27 @@ export default function App() {
                   forecastData={forecastData} 
                 />
               )}
+              {activeTab === "reports" && (
+                <WeeklyReportsView 
+                  reports={reports} 
+                />
+              )}
               {activeTab === "addReport" && (
                 <ReportForm 
                   projectName={activeProject}
                   onReportAdded={handleReportAdded}
+                  onCancel={() => setActiveTab("dashboard")}
                 />
+              )}
+              {activeTab === "howItWorks" && (
+                <HowItWorksView />
               )}
             </main>
           )}
         </>
       )}
 
-      {/* Model Performance Modal */}
-      {showModelPerfModal && (
-        <div className="modal-overlay" onClick={() => setShowModelPerfModal(false)}>
-          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowModelPerfModal(false)}>
-              <X size={18} />
-            </button>
-            
-            <div className="model-comp-card" style={{ background: 'transparent', border: 'none', padding: 0, boxShadow: 'none' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
-                <Layers size={20} style={{ color: '#8B5CF6' }} />
-                <div>
-                  <h3 className="card-title" style={{ fontSize: '1.1rem', margin: 0 }}>Model Performance Comparison</h3>
-                  <p className="card-subtitle" style={{ margin: '0.25rem 0 0 0', fontSize: '0.78rem' }}>Tested architectures against historical bug validation datasets</p>
-                </div>
-              </div>
-              
-              <div className="model-comp-list">
-                <div className="model-comp-item selected">
-                  <div className="model-comp-left">
-                    <span className="model-comp-bullet"></span>
-                    <span className="model-comp-name">RandomForestRegressor</span>
-                    <span className="model-comp-badge-selected">SELECTED</span>
-                  </div>
-                  <div className="model-comp-right">
-                    <span className="model-comp-mae">MAE: 1.4</span>
-                    <span className="model-comp-r2">R²: 0.85</span>
-                  </div>
-                </div>
-                
-                <div className="model-comp-item">
-                  <div className="model-comp-left">
-                    <span className="model-comp-bullet"></span>
-                    <span className="model-comp-name">XGBoost Regressor</span>
-                  </div>
-                  <div className="model-comp-right">
-                    <span className="model-comp-mae">MAE: 2.1</span>
-                    <span className="model-comp-r2">R²: 0.78</span>
-                  </div>
-                </div>
-                
-                <div className="model-comp-item">
-                  <div className="model-comp-left">
-                    <span className="model-comp-bullet"></span>
-                    <span className="model-comp-name">Linear Regression</span>
-                  </div>
-                  <div className="model-comp-right">
-                    <span className="model-comp-mae">MAE: 3.2</span>
-                    <span className="model-comp-r2">R²: 0.62</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-          </div>
-        </div>
-      )}
+
 
     </div>
   );

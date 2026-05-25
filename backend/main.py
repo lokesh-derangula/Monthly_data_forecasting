@@ -21,6 +21,21 @@ async def lifespan(app: FastAPI):
     create_db_and_tables()
     # Seed data on startup if database is empty
     generate_historical_data()
+    
+    # Pre-warm forecast cache for seeded projects to ensure instant loading
+    with Session(engine) as session:
+        statement = select(TestReport.projectName).distinct()
+        projects = session.exec(statement).all()
+        for proj in projects:
+            proj_statement = select(TestReport).where(TestReport.projectName == proj).order_by(TestReport.createdAt)
+            reports = session.exec(proj_statement).all()
+            if len(reports) >= 4:
+                try:
+                    forecast_payload = generate_forecast_response(reports)
+                    set_cached_forecast(proj, reports, forecast_payload)
+                    print(f"Pre-warmed forecast cache for project: {proj}")
+                except Exception as e:
+                    print(f"Failed to pre-warm cache for project {proj}: {e}")
     yield
 
 app = FastAPI(
